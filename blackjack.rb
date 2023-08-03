@@ -46,7 +46,7 @@ def deal_a_card(deck)
   return deck.cards[deck.cards.length - 1]
 end
 
-def print_hand(hand)
+def print_player_hand(hand)
   hand.each do |card|
     p "#{card.face} of #{card.suit}"
   end
@@ -65,14 +65,18 @@ end
 game = true
 
 while game == true
+  user_turn = true
+  dealer_turn = true
   player_hand = []
   dealer_hand = []
+  puts
   p "Welcome to Blackjack! Beat the dealer to win."
   p "Press enter to start a hand. Enter 'Quit' to end."
   input = gets.chomp
   if input.upcase == "QUIT"
     game = false
   else
+    system "clear"
     deck = Deck.new
     2.times do
       player_hand << deal_a_card(deck)
@@ -81,18 +85,23 @@ while game == true
       deck.cards.pop()
     end
     p "Your hand:"
-    print_hand(player_hand)
+    print_player_hand(player_hand)
     dealer_hand_value = dealer_hand[0].value + dealer_hand[1].value
     p "Dealers hand:"
     p "#{dealer_hand[0].face} of #{dealer_hand[0].suit}"
     if dealer_hand_value == 21
       p "#{dealer_hand[1].face} of #{dealer_hand[1].suit}"
       p "Dealer Blackjack, you lose"
+      user_turn = false
     else
       p "Unknown card"
       puts
     end
-    user_turn = true
+    if value_of_hand(player_hand) == 21
+      p "BLACKJACK!!! You win!"
+      user_turn = false
+      dealer_turn = false
+    end
     while user_turn == true
       p "Would you like to 'Hit' or 'Stay'?"
       decision = gets.chomp
@@ -102,10 +111,15 @@ while game == true
         deck.cards.pop()
         p "Your new hand:"
         puts
-        print_hand(player_hand)
+        print_player_hand(player_hand)
+        if value_of_hand(player_hand) > 21
+          p "Oh no. You bust!"
+          user_turn = false
+        end
       elsif decision.upcase == "STAY"
         p "Your hand was worth #{value_of_hand(player_hand)}"
         user_turn = false
+        dealer_turn = false
       else
         p "Not a valid input"
       end
