@@ -54,6 +54,14 @@ def print_player_hand(hand)
   puts
 end
 
+def print_dealer_hand(hand)
+  hand.each do |card|
+    p "#{card.face} of #{card.suit}"
+  end
+  p "The value of the dealers hand is #{value_of_hand(hand)}."
+  puts
+end
+
 def value_of_hand(hand)
   value = 0
   hand.each do |card|
@@ -86,6 +94,7 @@ while game == true
     end
     p "Your hand:"
     print_player_hand(player_hand)
+    sleep 1.5
     dealer_hand_value = dealer_hand[0].value + dealer_hand[1].value
     p "Dealers hand:"
     p "#{dealer_hand[0].face} of #{dealer_hand[0].suit}"
@@ -93,6 +102,7 @@ while game == true
       p "#{dealer_hand[1].face} of #{dealer_hand[1].suit}"
       p "Dealer Blackjack, you lose"
       user_turn = false
+      dealer_turn = false
     else
       p "Unknown card"
       puts
@@ -111,18 +121,53 @@ while game == true
         deck.cards.pop()
         p "Your new hand:"
         puts
+        sleep 1.5
         print_player_hand(player_hand)
         if value_of_hand(player_hand) > 21
           p "Oh no. You bust!"
           user_turn = false
+          dealer_turn = false
         end
       elsif decision.upcase == "STAY"
         p "Your hand was worth #{value_of_hand(player_hand)}"
+        puts
         user_turn = false
-        dealer_turn = false
       else
         p "Not a valid input"
       end
     end
+    while dealer_turn == true
+      sleep 1.5
+      p "Dealers hand:"
+      print_dealer_hand(dealer_hand)
+      sleep 1.5
+      if value_of_hand(dealer_hand) < 17
+        p "The dealer takes another card."
+        puts
+        dealer_hand << deal_a_card(deck)
+        deck.cards.pop()
+      elsif value_of_hand(dealer_hand) > 21
+        dealer_turn = false
+        p "The dealer busts. You win!"
+      else
+        dealer_turn = false
+        p "The dealer ended with #{value_of_hand(dealer_hand)}"
+        puts
+        if value_of_hand(dealer_hand) > value_of_hand(player_hand)
+          p "The dealer wins"
+        elsif value_of_hand(dealer_hand) < value_of_hand(player_hand)
+          p "You win!"
+        else
+          p "Its a wash"
+        end
+      end
+    end
+  end
+
+  puts
+  p "Play again? ('Yes' or 'No')"
+  play_again = gets.chomp
+  if play_again.upcase == "NO"
+    game = false
   end
 end
