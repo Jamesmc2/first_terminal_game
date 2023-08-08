@@ -1,3 +1,5 @@
+#Things to add: split hands, betting on a hand
+
 class Card
   attr_accessor :suit, :face, :value
 
@@ -67,6 +69,7 @@ def value_of_hand(hand)
   hand.each do |card|
     value += card.value
   end
+
   return value
 end
 
@@ -124,9 +127,20 @@ while game == true
         sleep 1.5
         print_player_hand(player_hand)
         if value_of_hand(player_hand) > 21
-          p "Oh no. You bust!"
-          user_turn = false
-          dealer_turn = false
+          player_hand.each do |card|
+            if card.value == 11
+              card.value = 1
+              sleep 1.5
+              p "Your ace is now a one"
+              sleep 1.5
+              p "Your new hand value is #{value_of_hand(player_hand)}"
+            end
+          end
+          if value_of_hand(player_hand) > 21
+            p "Oh no. You bust!"
+            user_turn = false
+            dealer_turn = false
+          end
         end
       elsif decision.upcase == "STAY"
         p "Your hand was worth #{value_of_hand(player_hand)}"
