@@ -44,6 +44,15 @@ class Deck
   end
 end
 
+class Player
+  attr_accessor :name, :money
+
+  def initialize(name)
+    @name = name
+    @money = 100
+  end
+end
+
 def deal_a_card(deck)
   return deck.cards[deck.cards.length - 1]
 end
@@ -74,20 +83,27 @@ def value_of_hand(hand)
 end
 
 game = true
-
+p "Welcome to Blackjack! Enter your name."
+player_name = gets.chomp
+player = Player.new(player_name)
+p "Hello #{player.name}. You currently have $#{player.money}."
 while game == true
   user_turn = true
   dealer_turn = true
   player_hand = []
   dealer_hand = []
   puts
-  p "Welcome to Blackjack! Beat the dealer to win."
   p "Press enter to start a hand. Enter 'Quit' to end."
   input = gets.chomp
   if input.upcase == "QUIT"
     game = false
   else
     system "clear"
+    p "Place a bet equal to or lower than your total ammount of money"
+    bet = gets.chomp.to_i
+    player.money -= bet
+    p "Your current bet is $#{bet}. You have $#{player.money} remaining."
+    sleep 1.5
     deck = Deck.new
     2.times do
       player_hand << deal_a_card(deck)
@@ -103,7 +119,7 @@ while game == true
     p "#{dealer_hand[0].face} of #{dealer_hand[0].suit}"
     if dealer_hand_value == 21
       p "#{dealer_hand[1].face} of #{dealer_hand[1].suit}"
-      p "Dealer Blackjack, you lose"
+      p "Dealer Blackjack, you lose. Your new balence is $#{player.money}."
       user_turn = false
       dealer_turn = false
     else
@@ -111,7 +127,8 @@ while game == true
       puts
     end
     if value_of_hand(player_hand) == 21
-      p "BLACKJACK!!! You win!"
+      player.money += (bet * 2)
+      p "BLACKJACK!!! You win! Your new balence is $#{player.money}."
       user_turn = false
       dealer_turn = false
     end
@@ -134,10 +151,11 @@ while game == true
               p "Your ace is now a one"
               sleep 1.5
               p "Your new hand value is #{value_of_hand(player_hand)}"
+              break
             end
           end
           if value_of_hand(player_hand) > 21
-            p "Oh no. You bust!"
+            p "Oh no. You bust! Your new balence is $#{player.money}."
             user_turn = false
             dealer_turn = false
           end
@@ -162,26 +180,31 @@ while game == true
         deck.cards.pop()
       elsif value_of_hand(dealer_hand) > 21
         dealer_turn = false
-        p "The dealer busts. You win!"
+        player.money += (bet * 2)
+        p "The dealer busts. You win! Your new balence is $#{player.money}."
       else
         dealer_turn = false
         p "The dealer ended with #{value_of_hand(dealer_hand)}"
         puts
         if value_of_hand(dealer_hand) > value_of_hand(player_hand)
-          p "The dealer wins"
+          p "The dealer wins. Your new balence is $#{player.money}."
         elsif value_of_hand(dealer_hand) < value_of_hand(player_hand)
-          p "You win!"
+          player.money += (bet * 2)
+          p "You win! Your new balence is $#{player.money}."
         else
-          p "Its a wash"
+          player.money += bet
+          p "Its a wash. Your balence is still $#{player.money}"
         end
       end
     end
   end
 
   puts
-  p "Play again? ('Yes' or 'No')"
-  play_again = gets.chomp
-  if play_again.upcase == "NO"
-    game = false
+  if game
+    p "Play again? ('Yes' or 'No')"
+    play_again = gets.chomp
+    if play_again.upcase == "NO"
+      game = false
+    end
   end
 end
