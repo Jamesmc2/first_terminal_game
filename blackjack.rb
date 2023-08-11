@@ -129,7 +129,12 @@ while game == true
     p "#{dealer_hand[0].face} of #{dealer_hand[0].suit}"
     if dealer_hand_value == 21
       p "#{dealer_hand[1].face} of #{dealer_hand[1].suit}"
-      p "Dealer Blackjack, you lose. Your new balence is $#{player.money}."
+      if value_of_hand(player_hand) == 21
+        player.money += bet
+        p "Double Blackjack. Its a wash. Your balence is still $#{player.money}"
+      else
+        p "Dealer Blackjack, you lose. Your new balence is $#{player.money}."
+      end
       user_turn = false
       dealer_turn = false
     else
@@ -189,9 +194,19 @@ while game == true
         dealer_hand << deal_a_card(deck)
         deck.cards.pop()
       elsif value_of_hand(dealer_hand) > 21
-        dealer_turn = false
-        player.money += (bet * 2)
-        p "The dealer busts. You win! Your new balence is $#{player.money}."
+        dealer_hand.each do |card|
+          if card.value == 11
+            card.value = 1
+            p "The dealers ace is now a one"
+            puts
+            break
+          end
+        end
+        if value_of_hand(dealer_hand) > 21
+          dealer_turn = false
+          player.money += (bet * 2)
+          p "The dealer busts. You win! Your new balence is $#{player.money}."
+        end
       else
         dealer_turn = false
         p "The dealer ended with #{value_of_hand(dealer_hand)}"
