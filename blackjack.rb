@@ -101,10 +101,12 @@ while game == true
   else
     system "clear"
     while bet_check == false
-      p "Place a bet equal to or lower than your total ammount of money. (Your amount: $#{player.money})"
+      p "Place a bet equal to or lower than your total ammount of money. Minimum $1. (Your amount: $#{player.money})"
       bet = gets.chomp.to_i
       if bet > player.money
         p "You dont have enough money for that bet. Your current total is $#{player.money}"
+      elsif bet < 1
+        p "Not a valid bet. Try again."
       else
         player.money -= bet
         p "Your current bet is $#{bet}. You have $#{player.money} remaining."
